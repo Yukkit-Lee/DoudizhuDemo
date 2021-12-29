@@ -40,18 +40,24 @@ public class WholeGame {
         countAndCard.put(12, '2');
     }
 
-    public boolean compareTo(String a, String b) {
-
+    public boolean compareTo(String a, String b) { //出单比较
+        //根据有王或无王情况适当调整charAt的index参数
         if (a.contains("王") && b.contains("王"))
             return cardWeight.get(a.charAt(0)) > cardWeight.get(b.charAt(0));
         else if (a.contains("王") && !b.contains("王"))
             return cardWeight.get(a.charAt(0)) > cardWeight.get(b.charAt(1));
         else if (!a.contains("王") && !b.contains("王"))
             return cardWeight.get(a.charAt(1)) > cardWeight.get(b.charAt(1));
+        else if (!a.contains("王") && b.contains("王"))
+            return cardWeight.get(a.charAt(1)) > cardWeight.get(b.charAt(0));
         return false;
     }
 
     public Character getCardByArrayIndex(int index) {
         return countAndCard.get(index);
+    }
+
+    public int getWeightByCardName(Character firstChar) {
+        return cardWeight.get(firstChar);
     }
 }

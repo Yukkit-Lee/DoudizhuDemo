@@ -29,19 +29,23 @@ public class Test {
         user.showCard();
         user.sortCardHeap();
         user.showCard();
+        System.out.println();
         ArrayList<String> ooo=new ArrayList<>();
-        ooo.add("♣4");
-        user.operation(user.getCardHeap(), ooo);
+        ooo.add("♣J");
+        int i=0;
+        while(i++<3) {
+            user.operation(user.getCardHeap(), ooo);
 //        Map<Character, Integer> characterIntegerMap = user.censusCardByHashMap();
 //        for( Character key:characterIntegerMap.keySet()){
 //            System.out.print(key+":"+characterIntegerMap.get(key));
 //            System.out.print("  ");
 //        }
-        System.out.println();
-        user.showCard();
-        ooo.add("♣J");
-        oo.operation(oo.getCardHeap(),ooo);
-        System.out.println("2021-12-29 23:36:49");
+            System.out.println();
+            user.showCard();
+            oo.sortCardHeap();
+            oo.operation(oo.getCardHeap(), ooo);
+
+        }
 
     }
 }
