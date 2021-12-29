@@ -42,6 +42,7 @@ public class Test {
         ooo.add("♣J");
         oo.operation(oo.getCardHeap(),ooo);
         System.out.println("2132323");
+        System.out.println("2132323");
 
     }
 }
