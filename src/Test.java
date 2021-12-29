@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.Map;
 //git config --global http.postBuffer 524288000
 public class Test {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         Card card = new Card();
         card.dealCard();
@@ -31,20 +31,25 @@ public class Test {
         user.showCard();
         System.out.println();
         ArrayList<String> ooo=new ArrayList<>();
-        ooo.add("♣J");
+        ooo.add("♣3♣3");
         int i=0;
-        while(i++<3) {
+        System.out.println("===========");
+        while(i++<1) {
+            System.out.println();
             user.operation(user.getCardHeap(), ooo);
 //        Map<Character, Integer> characterIntegerMap = user.censusCardByHashMap();
 //        for( Character key:characterIntegerMap.keySet()){
 //            System.out.print(key+":"+characterIntegerMap.get(key));
 //            System.out.print("  ");
 //        }
-            System.out.println();
             user.showCard();
+            System.out.println();
+            Thread.sleep(2000);
+
             oo.sortCardHeap();
             oo.operation(oo.getCardHeap(), ooo);
 
+            Thread.sleep(2000);
         }
 
     }

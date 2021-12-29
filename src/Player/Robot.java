@@ -119,6 +119,29 @@ public class Robot {
         return ' ';
     }
 
+    //[♣4, ♦4, ♥4, ♣5, ♥5, ♦7, ♠7, ♠8, ♣9, ♥9, ♦10, ♣J, ♥J, ♣Q, ♦K, ♣K, ♥2, ♦2, ♣2, 大王]
+    //findTheSameCard(cardHeap,3) -> return ♣4♦4♥4
+    public String[] findTheSameCard(ArrayList<String> cardHeap, int cardNeedLength) {//找手牌中cardNeedLength张一样的牌，返回符合条件牌组(n张)
+        int count = 1, index = 0;
+        String ansCards = new String();//ansCards为符合条件的几张牌
+        String[] ans = new String[15];
+        for (int i = 0; i < cardHeap.size(); i++) {
+            ansCards = cardHeap.get(i);
+            if (i < cardHeap.size() - 1 && game.calculateWeight(cardHeap.get(i)) == game.calculateWeight(cardHeap.get(i + 1))) {
+                count++;
+                ansCards += cardHeap.get(i + 1);
+            } else //若接下来一张牌与前几张不同则count清零
+                count = 1;
+            if (count == cardNeedLength) {
+                ans[index++] = ansCards;
+                count = 1;//找到后count置零  排除统计超过cardNeedLength情况
+            }
+        }
+        return ans;//没有相同牌直接返回null
+
+        //[♠4, ♣4, ♠5, ♦6, ♣6, ♣7, ♥7, ♦7, ♠7, ♠8, ♣9, ♥9, ♥10, ♣10, ♦Q, ♣Q, ♥K, ♠K, ♦A, 小王] ->♠4♦6
+    }
+
     /**
      * cardInGame存放此局所有牌    ->   2021-12-29 14:39:12 最新思路  ：牌库中所有牌进HashMap（根据每张牌权值put进去） 比较大小即比较权值
      */
@@ -156,7 +179,7 @@ public class Robot {
                     for (int i = 0; i < cardHeap.size(); i++) {
                         if (cardHeap.get(i).charAt(1) == boomChar) {
                             for (int j = 0; j < 4; j++) {  //此处利用remove方法返回值为删除的元素 直接循环删除邻近的4个元素
-                                cardPlayerSend +=cardHeap.remove(i); //ArraysList动态 所以索引不用循环+1
+                                cardPlayerSend += cardHeap.remove(i); //ArraysList动态 所以索引不用循环+1
                             }
                             break;
                         }
@@ -167,9 +190,50 @@ public class Robot {
                 if (flag) {
                     System.out.println(getClass().getName() + "已经出牌：" + cardPlayerSend);
                     cardInGame.add(cardPlayerSend); //将此次出的牌加入到本局游戏所有牌（cardInGame）之中
-                }
-                else
+                } else
                     System.out.println("玩家过");
+                break;
+            }
+
+            case 4: {
+                boolean flag = false;
+                try {//perhapsAns可能为空 会出现空指针异常
+                    String[] perhapsArray = findTheSameCard(cardHeap, 2);
+                    for (int i = 0; i < perhapsArray.length; i++) {
+//                        System.out.println(perhapsArray[i]);
+//                        System.out.println(game.compareToByWeight(perhapsArray[i], lastCardInGame));
+                        if (game.compareToByWeight(perhapsArray[i], lastCardInGame) > 0) {
+                            //substring只适用于双数牌为2的情况 10不可用
+                            int index = cardHeap.indexOf(perhapsArray[i].substring(0, 2));//获取此牌在手牌中的索引位置
+                            for (int j = 0; j < 2; j++) {
+                                cardPlayerSend += cardHeap.remove(index);
+                            }
+                            flag = true;
+                            break;
+                        }
+                    }
+
+                } catch (NullPointerException e) {   //开始使用炸弹
+                    if (hasBoom(countCardArray) != ' ') {
+                        Character boomChar = hasBoom(countCardArray);
+                        for (int i = 0; i < cardHeap.size(); i++) {
+                            if (cardHeap.get(i).charAt(1) == boomChar) {
+                                for (int j = 0; j < 4; j++) {  //此处利用remove方法返回值为删除的元素 直接循环删除邻近的4个元素
+                                    cardPlayerSend += cardHeap.remove(i); //ArraysList动态 所以索引不用循环+1
+                                }
+                                break;
+                            }
+                        }
+                        flag = true;
+                    }
+                }
+                if (flag) {
+                    System.out.println(getClass().getName() + "已经出牌：" + cardPlayerSend);
+                    cardInGame.add(cardPlayerSend); //将此次出的牌加入到本局游戏所有牌（cardInGame）之中
+                } else
+                    System.out.println("玩家过");
+                break;
+
             }
 
         }
