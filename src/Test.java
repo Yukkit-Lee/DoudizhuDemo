@@ -41,8 +41,7 @@ public class Test {
         user.showCard();
         ooo.add("♣J");
         oo.operation(oo.getCardHeap(),ooo);
-        System.out.println("2132323");
-        System.out.println("2132323");
+        System.out.println("2021-12-29 23:36:49");
 
     }
 }
