@@ -31,7 +31,7 @@ public class Test {
         user.showCard();
         System.out.println();
         ArrayList<String> ooo=new ArrayList<>();
-        ooo.add("♣3♣3");
+        ooo.add("♣3♣4♣5♣6♣7");
         int i=0;
         System.out.println("===========");
         while(i++<1) {

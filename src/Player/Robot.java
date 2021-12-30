@@ -146,8 +146,16 @@ public class Robot {
      * cardInGame存放此局所有牌    ->   2021-12-29 14:39:12 最新思路  ：牌库中所有牌进HashMap（根据每张牌权值put进去） 比较大小即比较权值
      */
     public void operation(ArrayList<String> cardHeap, ArrayList<String> cardInGame) {
-        String lastCardInGame = cardInGame.get(cardInGame.size() - 1);//集合中最后一个元素 若上一家没出则不添加进集合，故总是拿有数据的一家相比
-        int cardNum = lastCardInGame.length();//获取长度 若长度不相同 则 直接跳过  ♣3♣3
+        int cardCount = cardInGame.size() - 1; //存储当前牌面集合中长度
+        String lastCardInGame = new String();   //cardNum=cardCount
+        int cardNum;
+        if (cardCount >= 0) {/**判断防止List.get()数组越界异常*/
+            lastCardInGame = cardInGame.get(cardInGame.size() - 1);//集合中最后一个元素 若上一家没出则不添加进集合，故总是拿有数据的一家相比
+            cardNum = lastCardInGame.length();//获取长度 若长度不相同 则 直接跳过  ♣3♣3
+        } else {
+            lastCardInGame = " ";
+            cardNum = 0;
+        }
         System.out.println("lastCard=" + lastCardInGame);
         boolean boom = false;
         String cardPlayerSend = new String();
@@ -159,6 +167,20 @@ public class Robot {
         /**2021-12-30 00:59:56 switch应根据权值选择 (否则牌面为10则出现异常)*/
         //cardNum中case 2为单张牌情况
         switch (cardNum) {//User: [大王, ♣Q, ♠Q, ♥K, ♠K, ♣K, ♠J, ♣J, ♣A, ♦A, ♦9, ♦8, ♠8, ♥7, ♣3, ♥3, ♦3]
+
+            case 0: {  /**生成随机数，0：出当前手牌中最小单张牌  1：出当前手牌中最小对子*/
+                int randomCardOrderNum = new Random().nextInt(2);
+                if (randomCardOrderNum != 0) {
+                    cardPlayerSend = findTheSameCard(cardHeap, 2)[0];
+                    cardHeap.remove(cardPlayerSend.substring(0, 2));
+                    cardHeap.remove(cardPlayerSend.substring(1, 3)); //将cardPlayerSend作为参数在当前手牌中删除
+                } else
+                    cardPlayerSend = cardHeap.remove(0);
+                System.out.println(getClass().getName() + "已经出牌：" + cardPlayerSend);
+                cardInGame.add(cardPlayerSend); //将此次出的牌加入到本局游戏所有牌（cardInGame）之中
+                break;
+            }
+
             case 2: {               //J:74 K:75 Q:81 9:57  0:48  A:65 [10]=10 [11]    [63]
 
                 int minCardAscii = 51;
@@ -234,6 +256,50 @@ public class Robot {
                     System.out.println("玩家过");
                 break;
 
+            }
+            case 10: {/**顺子情况*/
+                boolean flag = false;
+                int shunziCount = 0;                                                //   4  5  6  7  8
+                String[] shunziStringArray = new String[cardHeap.size() - 4]; //最多有cardHeap.size() - 4个顺子
+                for (int i = 0, j = 0; i <= cardHeap.size() - 4; i++) {// 1  2   3  5  4  3
+                    String tempCard = cardHeap.get(i);/**模拟 ：找出连续存放的5张牌 存放进入STRING[] 利用calculate比较权值即可*/
+                    //相邻牌比较权值 若相差为1 则证明是顺子
+                    if (game.compareToByWeight(cardHeap.get(i + 1), tempCard) == 1 && game.compareToByWeight(cardHeap.get(i + 3), cardHeap.get(i + 2)) == 1 && game.compareToByWeight(cardHeap.get(i + 2), cardHeap.get(i + 1)) == 1)
+                        shunziStringArray[shunziCount++] = tempCard + cardHeap.get(i + 1) + cardHeap.get(i + 2) + cardHeap.get(i + 3) + cardHeap.get(i + 4);
+                }
+
+                if (shunziCount == 0 && hasBoom(countCardArray) != ' ') { //顺子为0的话考虑炸弹
+                    Character boomChar = hasBoom(countCardArray);
+                    for (int i = 0; i < cardHeap.size(); i++) {
+                        if (cardHeap.get(i).charAt(1) == boomChar) {
+                            for (int j = 0; j < 4; j++) {  //此处利用remove方法返回值为删除的元素 直接循环删除邻近的4个元素
+                                cardPlayerSend += cardHeap.remove(i); //ArraysList动态 所以索引不用循环+1
+                            }
+                            break;
+                        }
+                    }
+                    flag = true;
+
+                } else {
+                    for (int i = 0; i < shunziStringArray.length; i++) {
+                        if (game.compareToByWeight(shunziStringArray[i], lastCardInGame) > 0) {
+                            cardPlayerSend = shunziStringArray[i];
+                            cardHeap.remove(cardPlayerSend.substring(0, 2));
+                            cardHeap.remove(cardPlayerSend.substring(1, 3));
+                            cardHeap.remove(cardPlayerSend.substring(2, 4));
+                            cardHeap.remove(cardPlayerSend.substring(3, 5));
+                            cardHeap.remove(cardPlayerSend.substring(4, 6));
+                            flag = true;
+                            break;
+                        }
+                    }
+                }
+                if (flag) {
+                    System.out.println(getClass().getName() + "已经出牌：" + cardPlayerSend);
+                    cardInGame.add(cardPlayerSend); //将此次出的牌加入到本局游戏所有牌（cardInGame）之中
+                } else
+                    System.out.println("玩家过");
+                break;
             }
 
         }
