@@ -259,16 +259,47 @@ public class Robot {
             }
             case 10: {/**顺子情况*/
                 boolean flag = false;
-                int shunziCount = 0;                                                //   4  5  6  7  8
-                String[] shunziStringArray = new String[cardHeap.size() - 4]; //最多有cardHeap.size() - 4个顺子
-                for (int i = 0, j = 0; i <= cardHeap.size() - 4; i++) {// 1  2   3  5  4  3
-                    String tempCard = cardHeap.get(i);/**模拟 ：找出连续存放的5张牌 存放进入STRING[] 利用calculate比较权值即可*/
-                    //相邻牌比较权值 若相差为1 则证明是顺子
-                    if (game.compareToByWeight(cardHeap.get(i + 1), tempCard) == 1 && game.compareToByWeight(cardHeap.get(i + 3), cardHeap.get(i + 2)) == 1 && game.compareToByWeight(cardHeap.get(i + 2), cardHeap.get(i + 1)) == 1)
-                        shunziStringArray[shunziCount++] = tempCard + cardHeap.get(i + 1) + cardHeap.get(i + 2) + cardHeap.get(i + 3) + cardHeap.get(i + 4);
+//                int shunziCount = 0;                                                //   4  5  6  7  8
+//                String[] shunziStringArray = new String[cardHeap.size() - 4]; //最多有cardHeap.size() - 4个顺子
+
+                ArrayList<Character> cloneList = new ArrayList<>();//新建集合存放每个出现次数>=1的手牌
+                int[] totalCount = censusCard();//get统计牌数的数组
+//                System.out.println(totalCount.length);//15
+//                System.out.println(Arrays.toString(totalCount));
+                //遍历cardHeap集合 统计每张牌次数存入cloneList
+                for (int i = 0; i < totalCount.length - 3; i++) {
+                    if (totalCount[i] >= 1)
+                        cloneList.add(game.getCardByArrayIndex(i));/*nullpointer*/ //soluted
+                }
+                System.out.println("clonelist=" + cloneList);//
+
+                Character[] ans = new Character[5];//字符数组->顺子
+                for (int i = 0; i < cloneList.size() - 4; i++) {
+                    if (game.getWeightByCardName(cloneList.get(i)) > game.getWeightByCardName(lastCardInGame.charAt(1)) &&
+                            //判断是否大于当前局面牌顺子的第一张
+                            game.getWeightByCardName(cloneList.get(i)) == game.getWeightByCardName(cloneList.get(i + 1)) - 1 &&
+                            game.getWeightByCardName(cloneList.get(i + 1)) == game.getWeightByCardName(cloneList.get(i + 2)) - 1 &&
+                            game.getWeightByCardName(cloneList.get(i + 2)) == game.getWeightByCardName(cloneList.get(i + 3)) - 1 &&
+                            game.getWeightByCardName(cloneList.get(i + 3)) == game.getWeightByCardName(cloneList.get(i + 4)) - 1) {
+                        for (int j = 0; j < 5; j++)
+                            ans[j] = cloneList.get(i + j);
+                        flag = true;
+
+                        //遍历cardHeap(当前手牌)找到ans
+                        for (int q = 0; q < cardHeap.size(); q++) {
+                            if (cardHeap.get(q).charAt(1) == ans[0]) {
+                                for (int j = 0; j < 5; j++) {
+                                    cardPlayerSend += game.getCardByChar(ans[j], cardHeap);//参数为和cardHeap相同的String
+                                    cardHeap.remove(game.getCardByChar(ans[j], cardHeap));
+                                }
+                                break;
+                            }
+                        }
+
+                    }
                 }
 
-                if (shunziCount == 0 && hasBoom(countCardArray) != ' ') { //顺子为0的话考虑炸弹
+                if (!flag && hasBoom(countCardArray) != ' ') { //顺子为0的话考虑炸弹
                     Character boomChar = hasBoom(countCardArray);
                     for (int i = 0; i < cardHeap.size(); i++) {
                         if (cardHeap.get(i).charAt(1) == boomChar) {
@@ -280,20 +311,8 @@ public class Robot {
                     }
                     flag = true;
 
-                } else {
-                    for (int i = 0; i < shunziStringArray.length; i++) {
-                        if (game.compareToByWeight(shunziStringArray[i], lastCardInGame) > 0) {
-                            cardPlayerSend = shunziStringArray[i];
-                            cardHeap.remove(cardPlayerSend.substring(0, 2));
-                            cardHeap.remove(cardPlayerSend.substring(1, 3));
-                            cardHeap.remove(cardPlayerSend.substring(2, 4));
-                            cardHeap.remove(cardPlayerSend.substring(3, 5));
-                            cardHeap.remove(cardPlayerSend.substring(4, 6));
-                            flag = true;
-                            break;
-                        }
-                    }
                 }
+
                 if (flag) {
                     System.out.println(getClass().getName() + "已经出牌：" + cardPlayerSend);
                     cardInGame.add(cardPlayerSend); //将此次出的牌加入到本局游戏所有牌（cardInGame）之中

@@ -34,6 +34,8 @@ public class Test {
         ooo.add("♣3♣4♣5♣6♣7");
         int i=0;
         System.out.println("===========");
+        String str="0123456";
+        System.out.println(str.substring(2,4));;
         while(i++<1) {
             System.out.println();
             user.operation(user.getCardHeap(), ooo);
@@ -51,6 +53,7 @@ public class Test {
 
             Thread.sleep(2000);
         }
+
 
     }
 }

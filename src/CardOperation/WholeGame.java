@@ -1,5 +1,6 @@
 package CardOperation;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class WholeGame {
@@ -74,8 +75,19 @@ public class WholeGame {
     public Character getCardByArrayIndex(int index) {
         return countAndCard.get(index);
     }
+    public String getCardStringByArrayIndex(int index) {
+        return countAndCard.get(index).toString();
+    }
 
     public int getWeightByCardName(Character firstChar) {
         return cardWeight.get(firstChar);
+    }
+
+    public String getCardByChar(Character s, ArrayList<String> list){
+        for (int i = 0; i < list.size(); i++) {
+            if(getWeightByCardName(s)==calculateWeight(list.get(i)))
+                return list.get(i);
+        }
+        return null;
     }
 }
