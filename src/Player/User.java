@@ -6,10 +6,9 @@ import CardOperation.WholeGame;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
-import java.util.concurrent.locks.Condition;
 
 
-public class User extends Robot {
+public class User extends Player {
     ArrayList<String> cardHeap;
     int cardCount;
 

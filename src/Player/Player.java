@@ -7,18 +7,18 @@ import java.util.concurrent.locks.ReentrantLock;
 import CardOperation.Card;
 import CardOperation.WholeGame;
 
-public class Robot {
+public class Player {
     ArrayList<String> cardHeap;
     static int dizhuNum = new Random().nextInt(3) + 1;//1 2 3
     static int i = 1;
     int cardCount;
     WholeGame game = new WholeGame();
 
-    public Robot() {
+    public Player() {
     }
 
 
-    public Robot(Card card) {
+    public Player(Card card) {
         cardHeap = card.getCardHeap()[i]; //first 1 2
         if ((i++) == dizhuNum)//如果静态变量i==地主数，则添加cardHeap[0]即底牌进此人cardHeap
             cardHeap.addAll(card.getCardHeap()[0]);

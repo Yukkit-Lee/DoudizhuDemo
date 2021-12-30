@@ -21,7 +21,7 @@ public class Card {
     public Card() {//构造方法中对总牌库进行按顺序初始化
 
         color = new String[]{"♣", "♥", "♦", "♠"};
-        num = new String[]{"3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A","2"};
+        num = new String[]{"3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A", "2"};
         kingArray = new String[]{"小王", "大王"};
         cardList = new ArrayList<>();
 

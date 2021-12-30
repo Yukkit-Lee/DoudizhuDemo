@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class WholeGame {
-    public static int gameCount = 0;
-    public  int cardCount = 5;
-    public ArrayList<String> cardInGame=new ArrayList<>();
-    public static boolean flag = false;
+    public int cardCount = 5;
+    public ArrayList<String> cardInGame = new ArrayList<>();
+    public ArrayList<Integer> judgeClearArray=new ArrayList<>();
     public static HashMap<Character, Integer> cardWeight = new HashMap<>();
     public static HashMap<Integer, Character> countAndCard = new HashMap<>();
 
@@ -59,7 +58,7 @@ public class WholeGame {
         int point = 0;
         int ansWeight = 0;
         while (point < card.length()) { //1最小为 49 最大Q为81
-            if (card.charAt(point) >= 49 && card.charAt(point) <= 81&&card.charAt(point)!='0')//跳过花色及10号牌中的0
+            if (card.charAt(point) >= 49 && card.charAt(point) <= 81 && card.charAt(point) != '0')//跳过花色及10号牌中的0
                 ansWeight += cardWeight.get(card.charAt(point));
             point++;
         }
@@ -68,7 +67,7 @@ public class WholeGame {
 
     public int compareToByWeight(String a, String b) { //多张牌比较 instance:(♣A♦A，♣3♦3)
         //♣A♦A
-        return calculateWeight(a)-calculateWeight(b);
+        return calculateWeight(a) - calculateWeight(b);
 
         //a和b不相同（♣3♣4 ， ♣4♣4）返回值小于 0  相同返回值等于 0  若a>b 返回值>0
     }
@@ -76,27 +75,28 @@ public class WholeGame {
     public Character getCardByArrayIndex(int index) {
         return countAndCard.get(index);
     }
+
     public String getCardStringByArrayIndex(int index) {
         return countAndCard.get(index).toString();
-    }
+    }//未使用
 
     public int getWeightByCardName(Character firstChar) {
         return cardWeight.get(firstChar);
     }
 
-    public String getCardByChar(Character s, ArrayList<String> list){
+    public String getCardByChar(Character s, ArrayList<String> list) {
         for (int i = 0; i < list.size(); i++) {
-            if(getWeightByCardName(s)==calculateWeight(list.get(i)))
+            if (getWeightByCardName(s) == calculateWeight(list.get(i)))
                 return list.get(i);
         }
         return null;
     }
 
-    public  boolean isClearCardInGame(ArrayList<Integer> list){
-        if(list.size()<0)
+    public boolean isClearCardInGame(ArrayList<Integer> list) {
+        if (list.size() < 0)
             return false;
-        for (int i = 0; i < list.size()-1; i++) {
-            if(list.get(i)==list.get(i+1)&&list.get(i)!=1)
+        for (int i = 0; i < list.size() - 1; i++) {
+            if (list.get(i) == list.get(i + 1) && list.get(i) != 1)
                 return true;
         }
         return false;
