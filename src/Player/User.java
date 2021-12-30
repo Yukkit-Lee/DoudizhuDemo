@@ -16,7 +16,9 @@ public class User extends Player {
         super(card);
     }
 
-
+    public void showCard() {
+        System.out.println(getClass().getName() + ": " + super.cardHeap);
+    }
     public boolean operation(ArrayList<String> cardHeap,  WholeGame game) {
         String cardPlayerSend = new String();
         System.out.println("input or pass(input:pass):");
@@ -24,7 +26,7 @@ public class User extends Player {
         if (!inputCard.contains("pass")) {
             cardPlayerSend = inputCard;
             String[] splitCard = inputCard.split(",");
-            System.out.println(Arrays.toString(splitCard));
+
             int i;
             for (i = 0; i < splitCard.length; i++) {
                 cardHeap.remove(splitCard[i]);
@@ -39,6 +41,7 @@ public class User extends Player {
             return false;
         }
     }
+
 
 //    @Override
 //    public void operation(int i) {

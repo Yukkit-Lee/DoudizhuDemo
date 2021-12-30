@@ -20,7 +20,9 @@ public class Player {
 
     public Player(Card card) {
         cardHeap = card.getCardHeap()[i]; //first 1 2
-        if ((i++) == dizhuNum)//如果静态变量i==地主数，则添加cardHeap[0]即底牌进此人cardHeap
+//        if ((i++) == dizhuNum)//如果静态变量i==地主数，则添加cardHeap[0]即底牌进此人cardHeap
+//            cardHeap.addAll(card.getCardHeap()[0]);
+                if ((i++) == 3)//阉割随机分配地主 指定用户为地主
             cardHeap.addAll(card.getCardHeap()[0]);
         this.cardCount = cardHeap.size();//记录当前对象手牌个数
     }
@@ -260,6 +262,7 @@ public class Player {
                             for (int j = 0; j < 2; j++) {
                                 cardPlayerSend += cardHeap.remove(index);
                             }
+                            game.cardCount -= 2;
                             flag = true;
                             break;
                         }

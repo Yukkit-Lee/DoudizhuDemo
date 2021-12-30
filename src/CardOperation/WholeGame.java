@@ -1,14 +1,18 @@
 package CardOperation;
 
+import Player.Player;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 public class WholeGame {
-    public int cardCount = 5;
+    public int cardCount = new Random().nextInt(54); //玩家要出的牌
     public ArrayList<String> cardInGame = new ArrayList<>();
-    public ArrayList<Integer> judgeClearArray=new ArrayList<>();
+    public ArrayList<Integer> judgeClearArray = new ArrayList<>();
     public static HashMap<Character, Integer> cardWeight = new HashMap<>();
     public static HashMap<Integer, Character> countAndCard = new HashMap<>();
+
 
     public WholeGame() {
         cardWeight.put('3', 1);
@@ -101,4 +105,13 @@ public class WholeGame {
         }
         return false;
     }
+
+//    public String judgeDizhu(Player e, Player e1, Player e2) {//判断谁当地主
+//        if (e2.getCardCount() < e1.getCardCount())
+//            return e.getCardCount() > e1.getCardCount() ? e.toString(): e1.toString();
+//        else if (e2.getCardCount() > e1.getCardCount())
+//            return e2.getCardCount() > e.getCardCount() ? e2.toString(): e.toString();
+//        return null;
+//    }
+
 }
