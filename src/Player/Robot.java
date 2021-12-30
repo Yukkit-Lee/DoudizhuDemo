@@ -271,9 +271,10 @@ public class Robot {
                     if (totalCount[i] >= 1)
                         cloneList.add(game.getCardByArrayIndex(i));/*nullpointer*/ //soluted
                 }
-                System.out.println("clonelist=" + cloneList);//
+//                System.out.println("clonelist=" + cloneList);//
 
                 Character[] ans = new Character[5];//字符数组->顺子
+                /**遍历手牌cardHeap*/
                 for (int i = 0; i < cloneList.size() - 4; i++) {
                     if (game.getWeightByCardName(cloneList.get(i)) > game.getWeightByCardName(lastCardInGame.charAt(1)) &&
                             //判断是否大于当前局面牌顺子的第一张
@@ -295,9 +296,9 @@ public class Robot {
                                 break;
                             }
                         }
-
+                        break;//
                     }
-                }
+                }/**结束*/
 
                 if (!flag && hasBoom(countCardArray) != ' ') { //顺子为0的话考虑炸弹
                     Character boomChar = hasBoom(countCardArray);
