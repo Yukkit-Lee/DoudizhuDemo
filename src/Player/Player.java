@@ -129,7 +129,7 @@ public class Player {
     }
 
     public boolean hasDoubleKing(int[] nums) {//检查census数组中双王的值是否为1
-        return nums[13] != 0 && nums[14] != 0;//机器人牌组需排序
+        return nums[13] != 0 && nums[14] != 0;/**机器人牌组需初始化排序 否则此方法返回值可能出错*/
     }
 
     //[♣4, ♦4, ♥4, ♣5, ♥5, ♦7, ♠7, ♠8, ♣9, ♥9, ♦10, ♣J, ♥J, ♣Q, ♦K, ♣K, ♥2, ♦2, ♣2, 大王]
@@ -222,7 +222,7 @@ public class Player {
                 if (!flag && hasBoom(countCardArray) != ' ') {
                     Character boomChar = hasBoom(countCardArray);
                     for (int i = 0; i < cardHeap.size(); i++) {
-                        if (cardHeap.get(i).charAt(1) == boomChar) {
+                        if (cardHeap.get(i).charAt(1) == boomChar) {/**已解决10的问题*/
                             for (int j = 0; j < 4; j++) {  //此处利用remove方法返回值为删除的元素 直接循环删除邻近的4个元素
                                 cardPlayerSend += cardHeap.remove(i); //ArraysList动态 所以索引不用循环+1
                             }
@@ -344,7 +344,7 @@ public class Player {
                             break;
                         }
                     }
-                } catch (NullPointerException e) {
+                } catch (NullPointerException e) {/**捕捉到异常则证明没有炸弹*/
                     if (!flag && hasDoubleKing(countCardArray)) {//没有则 王炸
                         for (int i = 0; i < 2; i++) {
                             cardPlayerSend += cardHeap.remove(cardHeap.size() - 1);
