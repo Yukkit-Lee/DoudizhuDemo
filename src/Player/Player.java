@@ -22,7 +22,7 @@ public class Player {
         cardHeap = card.getCardHeap()[i]; //first 1 2
 //        if ((i++) == dizhuNum)//如果静态变量i==地主数，则添加cardHeap[0]即底牌进此人cardHeap
 //            cardHeap.addAll(card.getCardHeap()[0]);
-                if ((i++) == 3)//阉割随机分配地主 指定用户为地主
+        if ((i++) == 3)//阉割随机分配地主 指定用户为地主
             cardHeap.addAll(card.getCardHeap()[0]);
         this.cardCount = cardHeap.size();//记录当前对象手牌个数
     }
@@ -307,18 +307,61 @@ public class Player {
 
             case 8:/**炸弹情况*/
             {
-//                int indexOfBoomArray = 0;
-//                String[] boomArray = new String[5];
-//                for (int i = 0; i < countCardArray.length; i++) {
-//                    if (countCardArray[i] == 4)
-//                        boomArray[indexOfBoomArray++] = " " + game.getCardByArrayIndex(i).toString();
-//                }
-//                for (int i = 0; i < boomArray.length; i++) {
-//                    if (game.compareToByWeight(boomArray[i], lastCardInGame.substring(0, 2)) > 0)
-//                        cardHeap.remove()
-//                }
-//                System.out.println(Arrays.toString(findTheSameCard(cardHeap, 4)));
-//                break;
+                boolean flag = false;
+                String tempString = new String();
+                String[] boomStr = new String[cardHeap.size() - 3];//炸弹数组最多为size-3长
+                int indexOfBoom = 0;
+                ArrayList<Integer> indexList = new ArrayList<>();
+                for (int i = 0; i < cardHeap.size() - 3; i++) {
+                    if (cardHeap.get(i).charAt(1) == cardHeap.get(i + 1).charAt(1) &&
+                            cardHeap.get(i + 1).charAt(1) == cardHeap.get(i + 2).charAt(1) &&
+                            cardHeap.get(i + 2).charAt(1) == cardHeap.get(i + 3).charAt(1)) {
+                        for (int j = i; j < i + 4; j++) {
+                            tempString += cardHeap.get(j);
+                        }
+                        boomStr[indexOfBoom++] = tempString;
+                        indexList.add(i);
+                    }
+                }
+                System.out.println(Arrays.toString(boomStr));
+
+                //接下来遍历boomStr数组 比较权值
+                try {
+                    for (int i = 0; i < boomStr.length; i++) {
+                        if (game.calculateWeight(boomStr[i]) > game.calculateWeight(lastCardInGame)) {
+                            int firstPosition = 0;
+                            for (int i1 = 0; i1 < cardHeap.size(); i1++) {//找到其在list中的索引
+                                if (boomStr[i].charAt(1) == cardHeap.get(i1).charAt(1)) {
+                                    firstPosition = i1;
+                                    break;
+                                }
+                            }
+                            for (int j = 0; j < 4; j++) {
+                                cardPlayerSend += cardHeap.remove(firstPosition);//循环删除在此索引位置上的element
+                            }
+                            game.cardCount -= 4;
+                            flag = true;
+                            break;
+                        }
+                    }
+                } catch (NullPointerException e) {
+                    if (!flag && hasDoubleKing(countCardArray)) {//没有则 王炸
+                        for (int i = 0; i < 2; i++) {
+                            cardPlayerSend += cardHeap.remove(cardHeap.size() - 1);
+                        }
+                        flag = true;
+                        game.cardCount -= 2;
+                    }
+                }
+                if (flag) {
+                    System.out.println(getClass().getName() + "已经出牌：" + cardPlayerSend);
+                    game.cardInGame.add(cardPlayerSend); //将此次出的牌加入到本局游戏所有牌（cardInGame）之中
+                    return true;
+                } else {
+                    System.out.println(getClass().getName() + "玩家过");
+                    return false;
+                }
+
             }
             case 10: {/**顺子情况*/
                 boolean flag = false;
