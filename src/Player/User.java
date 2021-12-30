@@ -1,18 +1,45 @@
 package Player;
 
 import CardOperation.Card;
+import CardOperation.WholeGame;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Scanner;
 import java.util.concurrent.locks.Condition;
 
 
 public class User extends Robot {
     ArrayList<String> cardHeap;
+    int cardCount;
 
     public User(Card card) {
         super(card);
     }
 
+
+    public boolean operation(ArrayList<String> cardHeap,  WholeGame game) {
+        String cardPlayerSend = new String();
+        System.out.println("input or pass(input:pass):");
+        String inputCard = new Scanner(System.in).next();
+        if (!inputCard.contains("pass")) {
+            cardPlayerSend = inputCard;
+            String[] splitCard = inputCard.split(",");
+            System.out.println(Arrays.toString(splitCard));
+            int i;
+            for (i = 0; i < splitCard.length; i++) {
+                cardHeap.remove(splitCard[i]);
+            }
+            System.out.println(getClass().getName() + "已经出牌：" + cardPlayerSend.replace(",",""));
+            game.cardCount -= i;
+            game.cardInGame.add(cardPlayerSend.replace(",",""));//删去输入的英文逗号并添加进cardInGame
+            System.out.println("玩家手牌:" + cardHeap);
+            return true;
+        } else {
+            System.out.println(this.getClass().getName() + "玩家过");
+            return false;
+        }
+    }
 
 //    @Override
 //    public void operation(int i) {

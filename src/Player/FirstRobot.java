@@ -4,10 +4,12 @@ import CardOperation.Card;
 
 import java.util.concurrent.locks.Condition;
 
+public class FirstRobot extends Robot{
 
-public class SecRebot extends Robot {
 
-    public SecRebot(Card card) {
+    public FirstRobot(Card card) {
         super(card);
     }
+
+
 }

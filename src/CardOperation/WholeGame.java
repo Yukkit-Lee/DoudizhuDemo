@@ -5,7 +5,8 @@ import java.util.HashMap;
 
 public class WholeGame {
     public static int gameCount = 0;
-    public static int cardCount = 54;
+    public  int cardCount = 5;
+    public ArrayList<String> cardInGame=new ArrayList<>();
     public static boolean flag = false;
     public static HashMap<Character, Integer> cardWeight = new HashMap<>();
     public static HashMap<Integer, Character> countAndCard = new HashMap<>();
@@ -89,5 +90,15 @@ public class WholeGame {
                 return list.get(i);
         }
         return null;
+    }
+
+    public  boolean isClearCardInGame(ArrayList<Integer> list){
+        if(list.size()<0)
+            return false;
+        for (int i = 0; i < list.size()-1; i++) {
+            if(list.get(i)==list.get(i+1)&&list.get(i)!=1)
+                return true;
+        }
+        return false;
     }
 }

@@ -11,19 +11,26 @@ public class Robot {
     ArrayList<String> cardHeap;
     static int dizhuNum = new Random().nextInt(3) + 1;//1 2 3
     static int i = 1;
+    int cardCount;
     WholeGame game = new WholeGame();
 
     public Robot() {
     }
 
+
     public Robot(Card card) {
         cardHeap = card.getCardHeap()[i]; //first 1 2
         if ((i++) == dizhuNum)//如果静态变量i==地主数，则添加cardHeap[0]即底牌进此人cardHeap
             cardHeap.addAll(card.getCardHeap()[0]);
+        this.cardCount = cardHeap.size();//记录当前对象手牌个数
     }
 
     public ArrayList<String> getCardHeap() {
         return cardHeap;
+    }
+
+    public int getCardCount() {
+        return cardCount;
     }
 
     public void showCard() {
@@ -119,6 +126,10 @@ public class Robot {
         return ' ';
     }
 
+    public boolean hasDoubleKing(int[] nums) {//检查census数组中双王的值是否为1
+        return nums[13] != 0 && nums[14] != 0;//机器人牌组需排序
+    }
+
     //[♣4, ♦4, ♥4, ♣5, ♥5, ♦7, ♠7, ♠8, ♣9, ♥9, ♦10, ♣J, ♥J, ♣Q, ♦K, ♣K, ♥2, ♦2, ♣2, 大王]
     //findTheSameCard(cardHeap,3) -> return ♣4♦4♥4
     public String[] findTheSameCard(ArrayList<String> cardHeap, int cardNeedLength) {//找手牌中cardNeedLength张一样的牌，返回符合条件牌组(n张)
@@ -145,12 +156,12 @@ public class Robot {
     /**
      * cardInGame存放此局所有牌    ->   2021-12-29 14:39:12 最新思路  ：牌库中所有牌进HashMap（根据每张牌权值put进去） 比较大小即比较权值
      */
-    public void operation(ArrayList<String> cardHeap, ArrayList<String> cardInGame) {
-        int cardCount = cardInGame.size() - 1; //存储当前牌面集合中长度
+    public boolean operation(ArrayList<String> cardHeap, WholeGame game) {
+        int cardCount = game.cardInGame.size() - 1; //存储当前牌面集合中长度
         String lastCardInGame = new String();   //cardNum=cardCount
         int cardNum;
         if (cardCount >= 0) {/**判断防止List.get()数组越界异常*/
-            lastCardInGame = cardInGame.get(cardInGame.size() - 1);//集合中最后一个元素 若上一家没出则不添加进集合，故总是拿有数据的一家相比
+            lastCardInGame = game.cardInGame.get(game.cardInGame.size() - 1);//集合中最后一个元素 若上一家没出则不添加进集合，故总是拿有数据的一家相比
             cardNum = lastCardInGame.length();//获取长度 若长度不相同 则 直接跳过  ♣3♣3
         } else {
             lastCardInGame = " ";
@@ -165,7 +176,14 @@ public class Robot {
         Map<Character, Integer> map = censusCardByHashMap();
 
         /**2021-12-30 00:59:56 switch应根据权值选择 (否则牌面为10则出现异常)*/
-        //cardNum中case 2为单张牌情况
+
+        /**遍历lastCardInGame 统计10出现的次数 若出现一次则cardNum-1*/
+        char[] chars = lastCardInGame.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            if (chars[i] == '1')
+                cardNum--;
+        }
+
         switch (cardNum) {//User: [大王, ♣Q, ♠Q, ♥K, ♠K, ♣K, ♠J, ♣J, ♣A, ♦A, ♦9, ♦8, ♠8, ♥7, ♣3, ♥3, ♦3]
 
             case 0: {  /**生成随机数，0：出当前手牌中最小单张牌  1：出当前手牌中最小对子*/
@@ -174,13 +192,16 @@ public class Robot {
                     cardPlayerSend = findTheSameCard(cardHeap, 2)[0];
                     cardHeap.remove(cardPlayerSend.substring(0, 2));
                     cardHeap.remove(cardPlayerSend.substring(1, 3)); //将cardPlayerSend作为参数在当前手牌中删除
-                } else
+                    game.cardCount -= 2;
+                } else {
                     cardPlayerSend = cardHeap.remove(0);
+                    game.cardCount--;
+                }
                 System.out.println(getClass().getName() + "已经出牌：" + cardPlayerSend);
-                cardInGame.add(cardPlayerSend); //将此次出的牌加入到本局游戏所有牌（cardInGame）之中
+                game.cardInGame.add(cardPlayerSend); //将此次出的牌加入到本局游戏所有牌（cardInGame）之中
                 break;
             }
-
+            //cardNum中case 2为单张牌情况
             case 2: {               //J:74 K:75 Q:81 9:57  0:48  A:65 [10]=10 [11]    [63]
 
                 int minCardAscii = 51;
@@ -207,14 +228,23 @@ public class Robot {
                         }
                     }
                     flag = true;
+                } else if (!flag && hasDoubleKing(countCardArray)) {
+                    for (int i = 0; i < 2; i++) {
+                        cardPlayerSend += cardHeap.remove(cardHeap.size() - 1);
+                    }
+                    flag = true;
                 }
 
                 if (flag) {
                     System.out.println(getClass().getName() + "已经出牌：" + cardPlayerSend);
-                    cardInGame.add(cardPlayerSend); //将此次出的牌加入到本局游戏所有牌（cardInGame）之中
-                } else
-                    System.out.println("玩家过");
-                break;
+                    game.cardInGame.add(cardPlayerSend); //将此次出的牌加入到本局游戏所有牌（cardInGame）之中
+                    game.cardCount--;
+                    return true;
+                } else {
+                    System.out.println(getClass().getName() + "玩家过");
+                    return false;
+                }
+
             }
 
             case 4: {
@@ -224,7 +254,7 @@ public class Robot {
                     for (int i = 0; i < perhapsArray.length; i++) {
 //                        System.out.println(perhapsArray[i]);
 //                        System.out.println(game.compareToByWeight(perhapsArray[i], lastCardInGame));
-                        if (game.compareToByWeight(perhapsArray[i], lastCardInGame) > 0) {
+                        if (game.compareToByWeight(perhapsArray[i], lastCardInGame) > 0 && !lastCardInGame.equals("大王小王")) {
                             //substring只适用于双数牌为2的情况 10不可用
                             int index = cardHeap.indexOf(perhapsArray[i].substring(0, 2));//获取此牌在手牌中的索引位置
                             for (int j = 0; j < 2; j++) {
@@ -236,7 +266,7 @@ public class Robot {
                     }
 
                 } catch (NullPointerException e) {   //开始使用炸弹
-                    if (hasBoom(countCardArray) != ' ') {
+                    if (hasBoom(countCardArray) != ' ' && !lastCardInGame.equals("大王小王")) {
                         Character boomChar = hasBoom(countCardArray);
                         for (int i = 0; i < cardHeap.size(); i++) {
                             if (cardHeap.get(i).charAt(1) == boomChar) {
@@ -246,16 +276,46 @@ public class Robot {
                                 break;
                             }
                         }
+                        game.cardCount -= 4;
                         flag = true;
-                    }
-                }
-                if (flag) {
-                    System.out.println(getClass().getName() + "已经出牌：" + cardPlayerSend);
-                    cardInGame.add(cardPlayerSend); //将此次出的牌加入到本局游戏所有牌（cardInGame）之中
-                } else
-                    System.out.println("玩家过");
-                break;
+                    } else if (!flag && hasDoubleKing(countCardArray)) {
+                        for (int i = 0; i < 2; i++) {
+                            cardPlayerSend += cardHeap.remove(cardHeap.size() - 1);
+                        }
+                        game.cardCount -= 2;
+                        flag = true;
 
+                    }
+
+
+                } finally {
+                    if (flag) {
+                        System.out.println(getClass().getName() + "已经出牌：" + cardPlayerSend);
+                        game.cardInGame.add(cardPlayerSend); //将此次出的牌加入到本局游戏所有牌（cardInGame）之中
+                        return true;
+                    } else {
+                        System.out.println(getClass().getName() + "玩家过");
+                        return false;
+                    }
+
+                }
+
+            }
+
+            case 8:/**炸弹情况*/
+            {
+//                int indexOfBoomArray = 0;
+//                String[] boomArray = new String[5];
+//                for (int i = 0; i < countCardArray.length; i++) {
+//                    if (countCardArray[i] == 4)
+//                        boomArray[indexOfBoomArray++] = " " + game.getCardByArrayIndex(i).toString();
+//                }
+//                for (int i = 0; i < boomArray.length; i++) {
+//                    if (game.compareToByWeight(boomArray[i], lastCardInGame.substring(0, 2)) > 0)
+//                        cardHeap.remove()
+//                }
+//                System.out.println(Arrays.toString(findTheSameCard(cardHeap, 4)));
+//                break;
             }
             case 10: {/**顺子情况*/
                 boolean flag = false;
@@ -285,12 +345,12 @@ public class Robot {
                         for (int j = 0; j < 5; j++)
                             ans[j] = cloneList.get(i + j);
                         flag = true;
-
                         //遍历cardHeap(当前手牌)找到ans
                         for (int q = 0; q < cardHeap.size(); q++) {
                             if (cardHeap.get(q).charAt(1) == ans[0]) {
                                 for (int j = 0; j < 5; j++) {
                                     cardPlayerSend += game.getCardByChar(ans[j], cardHeap);//参数为和cardHeap相同的String
+
                                     cardHeap.remove(game.getCardByChar(ans[j], cardHeap));
                                 }
                                 break;
@@ -298,9 +358,10 @@ public class Robot {
                         }
                         break;//
                     }
+                    game.cardCount -= 5;
                 }/**结束*/
 
-                if (!flag && hasBoom(countCardArray) != ' ') { //顺子为0的话考虑炸弹
+                if (!flag && hasBoom(countCardArray) != ' ' && !lastCardInGame.equals("大王小王")) { //顺子为0的话考虑炸弹
                     Character boomChar = hasBoom(countCardArray);
                     for (int i = 0; i < cardHeap.size(); i++) {
                         if (cardHeap.get(i).charAt(1) == boomChar) {
@@ -310,19 +371,30 @@ public class Robot {
                             break;
                         }
                     }
+                    game.cardCount -= 4;
                     flag = true;
 
+                } else if (!flag && hasDoubleKing(countCardArray)) {//顺子为0 炸弹为0 考虑王炸
+                    for (int i = 0; i < 2; i++) {
+                        cardPlayerSend += cardHeap.remove(cardHeap.size() - 1);
+                    }
+                    flag = true;
+                    game.cardCount -= 2;
                 }
 
                 if (flag) {
                     System.out.println(getClass().getName() + "已经出牌：" + cardPlayerSend);
-                    cardInGame.add(cardPlayerSend); //将此次出的牌加入到本局游戏所有牌（cardInGame）之中
-                } else
-                    System.out.println("玩家过");
-                break;
+                    game.cardInGame.add(cardPlayerSend); //将此次出的牌加入到本局游戏所有牌（cardInGame）之中
+                    return true;
+                } else {
+                    System.out.println(getClass().getName() + "玩家过");
+                    return false;
+                }
+
             }
 
         }
+        return true;
     }
 
 }

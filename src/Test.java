@@ -1,12 +1,13 @@
 import CardOperation.Card;
-import Player.FirstRebot;
+import CardOperation.WholeGame;
+import Player.FirstRobot;
 import Player.Robot;
-import Player.SecRebot;
+import Player.SecRobot;
 import Player.User;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
+
+
 //git config --global http.postBuffer 524288000
 public class Test {
     public static void main(String[] args) throws InterruptedException {
@@ -21,39 +22,71 @@ public class Test {
 //        card.showHand(card.getCardHeap());
 //        UI userUI=new UI();
 
-        Robot oo = new FirstRebot(card);
+        Robot oo = new FirstRobot(card);
+        oo.sortCardHeap();
         oo.showCard();
-        Robot aa = new SecRebot(card);
+        Robot aa = new SecRobot(card);
+        aa.sortCardHeap();
         aa.showCard();
         User user = new User(card);
-        user.showCard();
         user.sortCardHeap();
         user.showCard();
         System.out.println();
-        ArrayList<String> ooo=new ArrayList<>();
-        ooo.add("♣3♣4♣5♣6♣7");
-        int i=0;
+        ArrayList<String> ooo = new ArrayList<>();
+        oo.sortCardHeap();
+        aa.sortCardHeap();
+        WholeGame game = new WholeGame();
+        int i = 0;
         System.out.println("===========");
-        String str="0123456";
-        System.out.println(str.substring(2,4));;
-        while(i++<1) {
-            System.out.println();
-            user.operation(user.getCardHeap(), ooo);
-//        Map<Character, Integer> characterIntegerMap = user.censusCardByHashMap();
-//        for( Character key:characterIntegerMap.keySet()){
-//            System.out.print(key+":"+characterIntegerMap.get(key));
-//            System.out.print("  ");
-//        }
-            user.showCard();
-            System.out.println();
-            Thread.sleep(2000);
+        int count = 14;
+        ArrayList<Integer> list = new ArrayList<>();
 
-            oo.sortCardHeap();
-            oo.operation(oo.getCardHeap(), ooo);
+        while (count > 3) {
+            System.out.println();
+            if (game.cardCount > 0) {
+                if (game.isClearCardInGame(list))
+                    game.cardInGame.clear();
+                if (!user.operation(user.getCardHeap(), game))
+                    list.add(0);
+                else
+                    list.add(1);
+                Thread.sleep(2000);
+                count--;
+                System.out.println();
+            }
 
-            Thread.sleep(2000);
+            if (game.cardCount > 0) {
+                if (game.isClearCardInGame(list))
+                    game.cardInGame.clear();
+                if (!oo.operation(oo.getCardHeap(), game))
+                    list.add(0);
+                else
+                    list.add(1);
+                Thread.sleep(2000);
+                count--;
+                System.out.println();
+            }
+
+            if (game.cardCount > 0) {
+                if (game.isClearCardInGame(list))
+                    game.cardInGame.clear();
+                if (!aa.operation(aa.getCardHeap(),game))
+                    list.add(0);
+                else
+                    list.add(1);
+                Thread.sleep(2000);
+                count--;
+                System.out.println();
+            }
         }
-
-
+//            ArrayList<String> oop=new ArrayList<>();
+//            oop.add("i3");
+//            oop.add("3");
+//        for (int i1 = 0; i1 < oop.size(); i1++) {
+//            if(oop.get(i).contains("3")) {
+//                System.out.println(oop.get(i));
+//break;
+//            }
+//        }
     }
 }
